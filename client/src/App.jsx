@@ -1,9 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import EventsPage from "./pages/EventsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import CreateEventPage from "./pages/CreateEventPage";
+import EventDetailPage from "./pages/EventDetailPage";
 
 function App() {
   return (
@@ -14,6 +17,14 @@ function App() {
           <Route path="/" element={<EventsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route 
+             path="/create-event"
+             element={
+             <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+               <CreateEventPage />
+             </ProtectedRoute>
+           } />
+           <Route path="/events/:slug" element={<EventDetailPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

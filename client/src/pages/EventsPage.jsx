@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getEvents } from "../services/eventService";
 
 function EventsPage() {
@@ -35,9 +36,10 @@ function EventsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
-            <div
+            <Link
               key={event._id}
-              className="bg-surface rounded-card shadow-md p-5 border border-border hover:shadow-lg transition"
+              to={`/events/${event.slug}`}
+              className="block bg-surface rounded-card shadow-md p-5 border border-border hover:shadow-lg transition"
             >
               <h2 className="font-heading font-semibold text-xl text-primary mb-2">
                 {event.title}
@@ -49,7 +51,7 @@ function EventsPage() {
                   {event.category}
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
