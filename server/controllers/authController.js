@@ -70,3 +70,9 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get logged-in user's profile
+// @route   GET /api/auth/profile
+export const getProfile = async (req, res) => {
+  res.status(200).json(req.user);
+};
