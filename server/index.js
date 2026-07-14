@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
+import User from "./models/User.js";
 
 
 dotenv.config();
@@ -16,6 +17,8 @@ app.use(express.json());
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", message: "Server is running" });
 });
+
+
 
 const PORT = process.env.PORT || 5000;
 
