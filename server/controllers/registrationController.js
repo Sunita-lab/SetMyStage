@@ -2,6 +2,7 @@ import Registration from "../models/Registration.js";
 import Ticket from "../models/Ticket.js";
 import Event from "../models/Event.js";
 import crypto from "crypto";
+import QRCode from "qrcode";
 
 // @desc    Register for an event (book a ticket)
 // @route   POST /api/registrations
@@ -36,6 +37,8 @@ export const registerForEvent = async (req, res) => {
     // Generate a unique QR code string
     const qrCode = crypto.randomBytes(16).toString("hex");
 
+    const qrCodeImage = await QRCode.toDataURL(qrCode);
+
     const registration = await Registration.create({
       user: req.user._id,
       event: ticket.event,
@@ -45,6 +48,7 @@ export const registerForEvent = async (req, res) => {
       amount: ticket.price * (guestCount || 1),
       paymentStatus: ticket.price > 0 ? "pending" : "not_required",
       qrCode,
+      qrCodeImage,
     });
 
     // Update ticket sold count

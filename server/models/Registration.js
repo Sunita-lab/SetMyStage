@@ -35,6 +35,10 @@ const registrationSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    qrCodeImage: {
+       type: String,
+       default: "",
+    },
     guestCount: {
       type: Number,
       default: 1,
