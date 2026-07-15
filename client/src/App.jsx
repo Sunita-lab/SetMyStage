@@ -9,6 +9,7 @@ import CreateEventPage from "./pages/CreateEventPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import MyRegistrationsPage from "./pages/MyRegistrationsPage";
 import CheckInPage from "./pages/CheckInPage";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
            <Route path="/events/:slug" element={<EventDetailPage />} />
            <Route path="/my-registrations" element={<ProtectedRoute><MyRegistrationsPage /></ProtectedRoute>} />
           <Route path="/checkin" element={<ProtectedRoute allowedRoles={["organizer", "admin"]}><CheckInPage /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

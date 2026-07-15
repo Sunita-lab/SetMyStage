@@ -39,6 +39,10 @@ function Navbar() {
           </Link>
         )}
 
+        <Link to="/dashboard" className="text-ink font-medium hover:text-secondary transition">
+          Dashboard
+        </Link>
+
         {user && (user.role === "organizer" || user.role === "admin") && (
           <Link
             to="/checkin"

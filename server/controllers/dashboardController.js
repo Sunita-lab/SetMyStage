@@ -59,3 +59,30 @@ export const getAdminStats = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get attendee's dashboard stats
+// @route   GET /api/dashboard/attendee
+export const getAttendeeStats = async (req, res) => {
+  try {
+    const registrations = await Registration.find({
+      user: req.user._id,
+      status: { $ne: "cancelled" },
+    }).populate("event", "title slug startDate");
+
+    const totalRegistrations = registrations.length;
+    const totalAttended = registrations.filter((reg) => reg.checkedInAt).length;
+
+    const upcoming = registrations
+      .filter((reg) => reg.event && new Date(reg.event.startDate) > new Date())
+      .sort((a, b) => new Date(a.event.startDate) - new Date(b.event.startDate))
+      .slice(0, 5);
+
+    res.status(200).json({
+      totalRegistrations,
+      totalAttended,
+      upcoming,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
