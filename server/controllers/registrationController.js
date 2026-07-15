@@ -80,3 +80,43 @@ export const getMyRegistrations = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Check-in attendee via QR code
+// @route   POST /api/registrations/checkin
+export const checkInAttendee = async (req, res) => {
+  try {
+    const { qrCode } = req.body;
+
+    const registration = await Registration.findOne({ qrCode }).populate("event").populate("user", "name email");
+
+    if (!registration) {
+      return res.status(404).json({ message: "Invalid QR code — registration not found" });
+    }
+
+    // Sirf event ka organizer hi check-in kar sake
+    if (registration.event.organizer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to check in attendees for this event" });
+    }
+
+    if (registration.status === "cancelled") {
+      return res.status(400).json({ message: "This registration has been cancelled" });
+    }
+
+    if (registration.checkedInAt) {
+      return res.status(400).json({
+        message: `Already checked in at ${registration.checkedInAt.toLocaleString()}`,
+      });
+    }
+
+    registration.checkedInAt = new Date();
+    await registration.save();
+
+    res.status(200).json({
+      message: "Checked in successfully",
+      attendeeName: registration.user.name,
+      eventTitle: registration.event.title,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
