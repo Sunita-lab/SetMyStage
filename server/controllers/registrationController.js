@@ -120,3 +120,51 @@ export const checkInAttendee = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Export attendance records as CSV for an event
+// @route   GET /api/registrations/event/:eventId/export
+export const exportAttendance = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (event.organizer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const registrations = await Registration.find({
+      event: req.params.eventId,
+      status: { $ne: "cancelled" },
+    })
+      .populate("user", "name email")
+      .populate("ticket", "name price");
+
+    // CSV header row
+    let csv = "Name,Email,Ticket Type,Amount,Status,Checked In At,Registered At\n";
+
+    registrations.forEach((reg) => {
+      const row = [
+        reg.user?.name || "",
+        reg.user?.email || "",
+        reg.ticket?.name || "",
+        reg.amount,
+        reg.checkedInAt ? "Checked In" : "Not Checked In",
+        reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleString() : "",
+        new Date(reg.createdAt).toLocaleString(),
+      ];
+      csv += row.map((val) => `"${val}"`).join(",") + "\n";
+    });
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${event.slug}-attendance.csv"`
+    );
+    res.status(200).send(csv);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

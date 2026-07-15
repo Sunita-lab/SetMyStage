@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getOrganizerStats, getAttendeeStats } from "../services/dashboardService";
+import { downloadAttendanceReport } from "../services/registrationService";
 
 function DashboardPage() {
   const { user } = useAuth();
@@ -100,9 +101,19 @@ function DashboardPage() {
         >
           <div className="flex justify-between items-center mb-2">
             <p className="font-semibold text-ink">{item.title}</p>
+            <div className="flex items-center gap-3">
             <span className="text-sm text-mist">
               {item.checkedIn} / {item.totalRegistrations} ({item.percentage}%)
             </span>
+            <button
+              onClick={() => downloadAttendanceReport(item.eventId)}
+              className="text-primary text-xs font-semibold hover:underline"
+            >
+              Download CSV
+            </button>
+            </div>
+          </div>
+          <div className="w-full bg-border rounded-full h-2">
           </div>
           <div className="w-full bg-border rounded-full h-2">
             <div
