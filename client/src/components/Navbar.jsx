@@ -39,6 +39,15 @@ function Navbar() {
           </Link>
         )}
 
+        {user && (user.role === "organizer" || user.role === "admin") && (
+          <Link
+            to="/checkin"
+            className="text-ink font-medium hover:text-secondary transition"
+          >
+            Check In
+          </Link>
+        )}
+
         {user ? (
           <div className="flex items-center gap-3">
             <span className="text-mist text-sm">Hi, {user.name?.split(" ")[0]}</span>

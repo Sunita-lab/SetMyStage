@@ -8,6 +8,7 @@ import RegisterPage from "./pages/RegisterPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import MyRegistrationsPage from "./pages/MyRegistrationsPage";
+import CheckInPage from "./pages/CheckInPage";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
            } />
            <Route path="/events/:slug" element={<EventDetailPage />} />
            <Route path="/my-registrations" element={<ProtectedRoute><MyRegistrationsPage /></ProtectedRoute>} />
+          <Route path="/checkin" element={<ProtectedRoute allowedRoles={["organizer", "admin"]}><CheckInPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

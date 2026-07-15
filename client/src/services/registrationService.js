@@ -9,3 +9,8 @@ export const getMyRegistrations = async () => {
   const response = await api.get("/registrations/my");
   return response.data;
 };
+
+export const checkInAttendee = async (qrCode) => {
+  const response = await api.post("/registrations/checkin", { qrCode });
+  return response.data;
+};
