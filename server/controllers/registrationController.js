@@ -3,6 +3,8 @@ import Ticket from "../models/Ticket.js";
 import Event from "../models/Event.js";
 import crypto from "crypto";
 import QRCode from "qrcode";
+import sendEmail from "../utils/sendEmail.js";
+import User from "../models/User.js";
 
 // @desc    Register for an event (book a ticket)
 // @route   POST /api/registrations
@@ -62,6 +64,33 @@ export const registerForEvent = async (req, res) => {
       $inc: { registeredCount: requestedQty },
     });
   }
+
+  // Event details bhi chahiye email ke liye
+const event = await Event.findById(ticket.event);
+const user = await User.findById(req.user._id);
+
+const emailHtml = `
+  <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
+    <h2 style="color: #312E81;">Registration Confirmed! 🎉</h2>
+    <p>Hi ${user.name},</p>
+    <p>You're all set for <strong>${event.title}</strong>.</p>
+    <table style="width: 100%; margin: 16px 0;">
+      <tr><td style="color: #6B7280;">Ticket:</td><td>${ticket.name}</td></tr>
+      <tr><td style="color: #6B7280;">Date:</td><td>${new Date(event.startDate).toLocaleString()}</td></tr>
+      <tr><td style="color: #6B7280;">Status:</td><td>${isSoldOut ? "Waitlisted" : "Confirmed"}</td></tr>
+    </table>
+    <p>Show the QR code below at the venue for check-in:</p>
+    <img src="${qrCodeImage}" alt="QR Code" style="width: 150px; height: 150px;" />
+    <p style="color: #6B7280; font-size: 14px; margin-top: 24px;">— Team SetMyStage</p>
+  </div>
+`;
+
+sendEmail({
+  to: user.email,
+  subject: `Registration Confirmed: ${event.title}`,
+  html: emailHtml,
+});
+
 
     res.status(201).json(registration);
   } catch (error) {
