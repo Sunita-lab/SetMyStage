@@ -16,10 +16,10 @@ export const registerForEvent = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found or inactive" });
     }
 
-    // Check sold out
-    if (ticket.soldCount + (guestCount || 1) > ticket.quantity) {
-      return res.status(400).json({ message: "Not enough tickets available" });
-    }
+    const requestedQty = guestCount || 1;
+    const isSoldOut = ticket.soldCount + requestedQty > ticket.quantity;
+
+    
 
     // Check maxPerUser limit
     const existingCount = await Registration.countDocuments({
@@ -28,7 +28,7 @@ export const registerForEvent = async (req, res) => {
       status: { $ne: "cancelled" },
     });
 
-    if (existingCount + (guestCount || 1) > ticket.maxPerUser) {
+    if (existingCount + requestedQty > ticket.maxPerUser) {
       return res.status(400).json({
         message: `You can only book up to ${ticket.maxPerUser} of this ticket type`,
       });
@@ -43,22 +43,25 @@ export const registerForEvent = async (req, res) => {
       user: req.user._id,
       event: ticket.event,
       ticket: ticket._id,
-      guestCount: guestCount || 1,
+      guestCount: requestedQty,
       specialRequests: specialRequests || "",
-      amount: ticket.price * (guestCount || 1),
+      amount: ticket.price * requestedQty,
       paymentStatus: ticket.price > 0 ? "pending" : "not_required",
       qrCode,
       qrCodeImage,
+      status: isSoldOut ? "waitlisted" : "confirmed",
     });
 
     // Update ticket sold count
-    ticket.soldCount += guestCount || 1;
-    await ticket.save();
+    if (!isSoldOut) {
+      ticket.soldCount += requestedQty;
+      await ticket.save();
 
     // Update event registered count
     await Event.findByIdAndUpdate(ticket.event, {
-      $inc: { registeredCount: guestCount || 1 },
+      $inc: { registeredCount: requestedQty },
     });
+  }
 
     res.status(201).json(registration);
   } catch (error) {

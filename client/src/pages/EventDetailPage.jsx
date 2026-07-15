@@ -47,13 +47,17 @@ function EventDetailPage() {
     setBookingSuccess("");
 
     try {
-      await registerForEvent({ ticketId, guestCount: 1 });
+    const registration = await registerForEvent({ ticketId, guestCount: 1 });
+    if (registration.status === "waitlisted") {
+      setBookingSuccess("You've been added to the waitlist. We'll notify you if a spot opens up.");
+    } else {
       setBookingSuccess("Ticket booked! Check 'My Registrations' for your QR code.");
-    } catch (err) {
-      setBookingError(err.response?.data?.message || "Booking failed");
-    } finally {
-      setBookingId(null);
     }
+  } catch (err) {
+    setBookingError(err.response?.data?.message || "Booking failed");
+  } finally {
+    setBookingId(null);
+  }
   };
 
   if (loading) return <p className="text-center mt-10 text-mist">Loading...</p>;
@@ -143,13 +147,14 @@ function EventDetailPage() {
                     </div>
                     <button
                       onClick={() => handleBook(ticket._id)}
-                      disabled={soldOut || bookingId === ticket._id}
+                      disabled={bookingId === ticket._id}
                       className="bg-secondary text-white text-sm font-semibold px-5 py-2 rounded-btn hover:opacity-90 transition disabled:opacity-50"
                     >
-                      {soldOut
-                        ? "Sold Out"
-                        : bookingId === ticket._id
+                      {bookingId === ticket._id
+                      
                         ? "Booking..."
+                        : soldOut
+                        ? "Join Waitlist"
                         : "Book"}
                     </button>
                   </div>
