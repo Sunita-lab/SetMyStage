@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import EventDetailPage from "./pages/EventDetailPage";
+import MyRegistrationsPage from "./pages/MyRegistrationsPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
              </ProtectedRoute>
            } />
            <Route path="/events/:slug" element={<EventDetailPage />} />
+           <Route path="/my-registrations" element={<ProtectedRoute><MyRegistrationsPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

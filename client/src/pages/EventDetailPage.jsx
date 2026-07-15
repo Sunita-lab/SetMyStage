@@ -1,18 +1,31 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { getEventBySlug } from "../services/eventService";
+import { getTicketsForEvent } from "../services/ticketService";
+import { registerForEvent } from "../services/registrationService";
+import { useAuth } from "../context/AuthContext";
 
 function EventDetailPage() {
   const { slug } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [event, setEvent] = useState(null);
+  const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [bookingId, setBookingId] = useState(null);
+  const [bookingError, setBookingError] = useState("");
+  const [bookingSuccess, setBookingSuccess] = useState("");
 
   useEffect(() => {
-    const fetchEvent = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getEventBySlug(slug);
-        setEvent(data);
+        const eventData = await getEventBySlug(slug);
+        setEvent(eventData);
+
+        const ticketData = await getTicketsForEvent(eventData._id);
+        setTickets(ticketData);
       } catch (err) {
         setError("Event not found");
       } finally {
@@ -20,8 +33,28 @@ function EventDetailPage() {
       }
     };
 
-    fetchEvent();
+    fetchData();
   }, [slug]);
+
+  const handleBook = async (ticketId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setBookingId(ticketId);
+    setBookingError("");
+    setBookingSuccess("");
+
+    try {
+      await registerForEvent({ ticketId, guestCount: 1 });
+      setBookingSuccess("Ticket booked! Check 'My Registrations' for your QR code.");
+    } catch (err) {
+      setBookingError(err.response?.data?.message || "Booking failed");
+    } finally {
+      setBookingId(null);
+    }
+  };
 
   if (loading) return <p className="text-center mt-10 text-mist">Loading...</p>;
   if (error) return <p className="text-center mt-10 text-danger">{error}</p>;
@@ -76,6 +109,55 @@ function EventDetailPage() {
           Organized by{" "}
           <span className="text-ink font-medium">{event.organizer?.name}</span>
         </p>
+
+        {/* Tickets Section */}
+        <div className="mt-8 border-t border-border pt-6">
+          <h2 className="font-heading font-semibold text-xl text-ink mb-4">
+            Tickets
+          </h2>
+
+          {bookingError && (
+            <p className="text-danger text-sm mb-4">{bookingError}</p>
+          )}
+          {bookingSuccess && (
+            <p className="text-success text-sm mb-4">{bookingSuccess}</p>
+          )}
+
+          {tickets.length === 0 ? (
+            <p className="text-mist text-sm">No tickets available yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {tickets.map((ticket) => {
+                const soldOut = ticket.soldCount >= ticket.quantity;
+                return (
+                  <div
+                    key={ticket._id}
+                    className="flex justify-between items-center border border-border rounded-input p-4"
+                  >
+                    <div>
+                      <p className="font-semibold text-ink">{ticket.name}</p>
+                      <p className="text-mist text-sm">{ticket.description}</p>
+                      <p className="text-primary font-semibold mt-1">
+                        {ticket.price > 0 ? `₹${ticket.price}` : "Free"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleBook(ticket._id)}
+                      disabled={soldOut || bookingId === ticket._id}
+                      className="bg-secondary text-white text-sm font-semibold px-5 py-2 rounded-btn hover:opacity-90 transition disabled:opacity-50"
+                    >
+                      {soldOut
+                        ? "Sold Out"
+                        : bookingId === ticket._id
+                        ? "Booking..."
+                        : "Book"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <Link to="/" className="inline-block mt-6 text-primary font-semibold">
           ← Back to Events

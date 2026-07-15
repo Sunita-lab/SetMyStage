@@ -20,6 +20,15 @@ function Navbar() {
         <Link to="/" className="text-ink font-medium hover:text-secondary transition">
           Events
         </Link>
+      
+      {user && (
+        <Link
+          to="/my-registrations"
+          className="text-ink font-medium hover:text-secondary transition"
+        >
+          My Registrations
+        </Link>
+      )}
 
         {user && (user.role === "organizer" || user.role === "admin") && (
           <Link

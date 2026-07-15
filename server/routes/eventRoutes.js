@@ -19,6 +19,6 @@ router.put("/:id", protect, authorize("organizer", "admin"), updateEvent);
 router.delete("/:id", protect, authorize("organizer", "admin"), deleteEvent);
 
 router.use("/:eventId/tickets", ticketRoutes);
-router.use("/registrations", registrationRoutes);
+
 
 export default router;
