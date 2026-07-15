@@ -86,6 +86,35 @@ function DashboardPage() {
           })}
         </div>
       )}
+
+    {isOrganizer && stats.eventWiseAttendance && (
+  <div className="mt-10">
+    <h2 className="font-heading font-semibold text-xl text-ink mb-4">
+      Attendance by Event
+    </h2>
+    <div className="space-y-3">
+      {stats.eventWiseAttendance.map((item) => (
+        <div
+          key={item.eventId}
+          className="bg-surface rounded-card shadow-md p-4 border border-border"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <p className="font-semibold text-ink">{item.title}</p>
+            <span className="text-sm text-mist">
+              {item.checkedIn} / {item.totalRegistrations} ({item.percentage}%)
+            </span>
+          </div>
+          <div className="w-full bg-border rounded-full h-2">
+            <div
+              className="bg-secondary h-2 rounded-full transition-all"
+              style={{ width: `${item.percentage}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)} 
     </div>
   );
 }

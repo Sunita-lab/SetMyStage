@@ -26,12 +26,32 @@ export const getOrganizerStats = async (req, res) => {
       .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
       .slice(0, 5);
 
+    // Har event ka attendance percentage calculate karo
+    const eventWiseAttendance = events.map((event) => {
+      const eventRegs = registrations.filter(
+        (reg) => reg.event.toString() === event._id.toString()
+      );
+      const checkedIn = eventRegs.filter((reg) => reg.checkedInAt).length;
+      const total = eventRegs.length;
+      const percentage = total > 0 ? Math.round((checkedIn / total) * 100) : 0;
+
+      return {
+        eventId: event._id,
+        title: event.title,
+        slug: event.slug,
+        totalRegistrations: total,
+        checkedIn,
+        percentage,
+      };
+    });  
+
     res.status(200).json({
       totalEvents: events.length,
       totalRegistrations: registrations.length,
       totalRevenue,
       totalCheckedIn,
       upcomingEvents,
+      eventWiseAttendance,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
