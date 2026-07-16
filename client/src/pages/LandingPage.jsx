@@ -233,6 +233,66 @@ function LandingPage() {
     <StatCounter target={4.9} suffix="★" label="Rating" decimal />
   </div>
 </div>
+
+{/* Testimonials */}
+<div className="bg-[#0D0B1A] py-20 px-6 md:px-12">
+  <h2 className="font-heading font-bold text-3xl md:text-4xl text-white text-center mb-12">
+    Loved by Organizers
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+    {[
+      {
+        quote: "Managing our college fest became so much easier. Registrations and check-ins just worked.",
+        name: "Aditi Sharma",
+        role: "Event Coordinator, Tech Fest",
+      },
+      {
+        quote: "The QR check-in system saved us hours at the entrance. Attendees loved the smooth experience.",
+        name: "Rohan Mehta",
+        role: "Organizer, Music Night",
+      },
+      {
+        quote: "From planning to reporting, everything is in one place. Exactly what we needed.",
+        name: "Priya Nair",
+        role: "Community Lead, DevMeet",
+      },
+    ].map((t) => (
+      <div
+        key={t.name}
+        className="bg-[#1A1733] rounded-[20px] p-6 border border-white/5"
+      >
+        <p className="text-accent text-lg mb-3">★★★★★</p>
+        <p className="text-white/80 text-sm leading-relaxed mb-4">"{t.quote}"</p>
+        <p className="text-white font-semibold text-sm">{t.name}</p>
+        <p className="text-white/50 text-xs">{t.role}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* CTA */}
+<div
+  className="py-20 px-6 text-center"
+  style={{
+    background: "linear-gradient(135deg, #312E81 0%, #6D28D9 100%)",
+  }}
+>
+  <h2 className="font-heading font-bold text-3xl md:text-4xl text-white mb-6">
+    Ready to Set the Stage?
+  </h2>
+  <Link
+    to="/create-event"
+    className="inline-block bg-accent text-ink font-semibold px-8 py-3 rounded-btn hover:opacity-90 hover:-translate-y-0.5 transition"
+  >
+    Create Event
+  </Link>
+</div>
+
+{/* Footer */}
+<footer className="bg-[#0D0B1A] text-white/50 text-sm text-center py-8 px-6">
+  <p>© 2026 SetMyStage. Plan. Manage. Celebrate.</p>
+</footer>
 </>
 
     
