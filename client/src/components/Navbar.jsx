@@ -47,7 +47,7 @@ function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 bg-navy px-6 md:px-10 h-[72px] flex items-center shadow-md">
+    <nav className="sticky top-0 z-50 bg-navy px-6 md:px-10 h-[72px] flex items-center shadow-md border-b border-white/5">
       <div className="flex justify-between items-center w-full">
         <Link to="/" className="flex items-center" onClick={closeMenu}>
           <img src="/logo.png" alt="SetMyStage" className="h-14 w-auto" />
