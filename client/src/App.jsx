@@ -11,6 +11,7 @@ import MyRegistrationsPage from "./pages/MyRegistrationsPage";
 import CheckInPage from "./pages/CheckInPage";
 import DashboardPage from "./pages/DashboardPage";
 import LandingPage from "./pages/LandingPage";
+import TicketPage from "./pages/TicketPage";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
            <Route path="/my-registrations" element={<ProtectedRoute><MyRegistrationsPage /></ProtectedRoute>} />
           <Route path="/checkin" element={<ProtectedRoute allowedRoles={["organizer", "admin"]}><CheckInPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/my-registrations/:registrationId" element={<ProtectedRoute><TicketPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
