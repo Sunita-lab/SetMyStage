@@ -1,4 +1,50 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState , useRef} from "react";
+
+function StatCounter({ target, suffix, label, decimal = false }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const duration = 900;
+          const startTime = Date.now();
+
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const value = progress * target;
+            setCount(decimal? value.toFixed(1): Math.floor(value));
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target, decimal]);
+
+  return (
+    <div ref={ref} className="text-center">
+      <p className="font-heading font-bold text-4xl md:text-5xl text-accent">
+        {count}
+        {suffix}
+      </p>
+      <p className="text-white/60 mt-2">{label}</p>
+    </div>
+  );
+}
 
 function LandingPage() {
   const heroWords = ["From", "Idea", "to", "Applause."];
@@ -175,6 +221,16 @@ function LandingPage() {
         <span className="text-white/80 text-sm font-medium">{cat.label}</span>
       </Link>
     ))}
+  </div>
+</div>
+
+{/* Stats */}
+<div className="bg-navy py-20 px-6 md:px-12">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+    <StatCounter target={250} suffix="+" label="Events" />
+    <StatCounter target={15} suffix="K+" label="Attendees" />
+    <StatCounter target={800} suffix="+" label="Organizers" />
+    <StatCounter target={4.9} suffix="★" label="Rating" decimal />
   </div>
 </div>
 </>
