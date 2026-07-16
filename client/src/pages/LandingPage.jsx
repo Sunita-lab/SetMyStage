@@ -4,6 +4,7 @@ function LandingPage() {
   const heroWords = ["From", "Idea", "to", "Applause."];
 
   return (
+    <>
     <div
       className="min-h-screen flex items-center relative overflow-hidden bg-cover bg-center"
       style={{ backgroundImage: "url(/hero-bg.png)" }}
@@ -61,30 +62,95 @@ function LandingPage() {
       </div>
 
       {/* Floating glass cards — right side, desktop only */}
-      <div className="hidden lg:block absolute right-16 top-0 h-full w-96">
-        <div
-          className="absolute top-32 right-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
-          style={{ animationDelay: "0s" }}
-        >
-          <p className="font-semibold">AI Summit 2026</p>
-          <p className="text-sm text-white/70">1,245 Registered</p>
-        </div>
+<div className="hidden lg:block absolute right-16 top-0 h-full w-96">
+  <div
+    className="absolute top-28 right-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
+    style={{ animationDelay: "0s" }}
+  >
+    <p className="text-xs text-accent font-semibold mb-1">🎤 LIVE</p>
+    <p className="font-semibold">Tech Summit 2026</p>
+    <p className="text-sm text-white/70">1,245 Registered</p>
+  </div>
 
-        <div
-          className="absolute top-64 right-32 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
-          style={{ animationDelay: "1.5s" }}
-        >
-          <p className="font-semibold text-sm">QR StagePass</p>
-        </div>
+  <div
+    className="absolute top-60 right-36 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
+    style={{ animationDelay: "1.3s" }}
+  >
+    <p className="font-semibold text-sm mb-1">🎫 StagePass</p>
+    <div className="w-14 h-14 bg-white rounded mt-1" />
+  </div>
 
-        <div
-          className="absolute top-96 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
-          style={{ animationDelay: "3s" }}
-        >
-          <p className="font-semibold">₹2.4L Revenue</p>
-        </div>
+  <div
+    className="absolute top-96 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
+    style={{ animationDelay: "2.6s" }}
+  >
+    <p className="font-semibold">₹2.4L+</p>
+    <p className="text-sm text-white/70">Revenue Generated</p>
+  </div>
+</div>
+</div>
+
+{/* Trusted By marquee */}
+<div className="bg-[#131126] py-8 overflow-hidden">
+  <p className="text-center text-white/40 text-sm font-medium mb-6">
+    TRUSTED BY COMMUNITIES ACROSS INDIA
+  </p>
+  <div className="flex animate-marquee">
+    {[...Array(2)].map((_, dup) => (
+      <div key={dup} className="flex items-center gap-16 px-8 shrink-0">
+        {["OUTR", "IEEE", "Google DSC", "TEDx", "Mozilla"].map((name) => (
+          <span
+            key={name}
+            className="text-white/40 hover:text-white transition font-heading font-semibold text-xl whitespace-nowrap"
+          >
+            {name}
+          </span>
+        ))}
       </div>
-    </div>
+    ))}
+  </div>
+</div>
+
+{/* Everything You Need */}
+<div className="bg-navy py-20 px-6 md:px-12">
+  <h2 className="font-heading font-bold text-3xl md:text-4xl text-white text-center mb-12">
+    Everything You Need
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+    {[
+      {
+        icon: "🎭",
+        title: "Create",
+        description: "Create beautiful events with rich details, banners, and custom categories.",
+      },
+      {
+        icon: "📈",
+        title: "Manage",
+        description: "Registrations, payments, and tickets — all handled seamlessly in one place.",
+      },
+      {
+        icon: "✨",
+        title: "Celebrate",
+        description: "Create memorable experiences with QR check-ins and real-time insights.",
+      },
+    ].map((card) => (
+      <div
+        key={card.title}
+        className="bg-[#1A1733] rounded-[20px] p-8 border border-transparent hover:border-secondary hover:-translate-y-1 transition-all duration-200 shadow-md"
+      >
+        <p className="text-4xl mb-4">{card.icon}</p>
+        <h3 className="font-heading font-semibold text-xl text-white mb-2">
+          {card.title}
+        </h3>
+        <p className="text-white/60 text-sm leading-relaxed">{card.description}</p>
+      </div>
+    ))}
+  </div>
+</div>
+</>
+
+    
   );
 }
 
