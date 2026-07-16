@@ -32,7 +32,7 @@ function App() {
            } />
            <Route path="/events/:slug" element={<EventDetailPage />} />
            <Route path="/my-registrations" element={<ProtectedRoute><MyRegistrationsPage /></ProtectedRoute>} />
-          <Route path="/checkin" element={<ProtectedRoute allowedRoles={["organizer", "admin"]}><CheckInPage /></ProtectedRoute>} />
+          <Route path="/check-in" element={<ProtectedRoute allowedRoles={["organizer", "admin"]}><CheckInPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/my-registrations/:registrationId" element={<ProtectedRoute><TicketPage /></ProtectedRoute>} />
         </Routes>

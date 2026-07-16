@@ -1,24 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { CheckCircle2, XCircle, ScanLine } from "lucide-react";
 import { checkInAttendee } from "../services/registrationService";
 
 function CheckInPage() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  const scannerRef = useRef(null);
-  const isProcessing = useRef(false);
+  const isProcessingRef = useRef(false);
 
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      { fps: 10, qrbox: 250 },
-      false
-    );
+    const scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
 
     const onScanSuccess = async (decodedText) => {
-      // Ek hi QR ko baar-baar process hone se roko jab tak result clear na ho
-      if (isProcessing.current) return;
-      isProcessing.current = true;
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
 
       try {
         const data = await checkInAttendee(decodedText);
@@ -29,14 +24,14 @@ function CheckInPage() {
         setResult(null);
       }
 
-      // 2 second baad dubara scan allow karo
       setTimeout(() => {
-        isProcessing.current = false;
-      }, 2000);
+        isProcessingRef.current = false;
+        setResult(null);
+        setError("");
+      }, 3000);
     };
 
     scanner.render(onScanSuccess, () => {});
-    scannerRef.current = scanner;
 
     return () => {
       scanner.clear().catch(() => {});
@@ -44,25 +39,35 @@ function CheckInPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background px-6 py-10">
-      <div className="max-w-md mx-auto">
-        <h1 className="font-heading font-bold text-2xl text-primary mb-6 text-center">
-          Scan Ticket QR Code
-        </h1>
+    <div className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
+      <div className="w-full max-w-md text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <ScanLine className="text-secondary" size={22} />
+          <h1 className="font-heading font-bold text-2xl text-ink">Scan to Check In</h1>
+        </div>
+        <p className="text-mist text-sm mb-8">Point the camera at the attendee's QR code</p>
 
-        <div id="qr-reader" className="rounded-card overflow-hidden mb-6" />
+        <div className="bg-surface rounded-card border border-border shadow-md p-4 mb-6 overflow-hidden">
+          <div id="qr-reader" className="rounded-input overflow-hidden" />
+        </div>
+
+        {!result && !error && (
+          <p className="text-mist text-sm">Ready to scan...</p>
+        )}
 
         {result && (
-          <div className="bg-success/10 border border-success rounded-card p-4 text-center">
-            <p className="text-success font-semibold">✓ Checked in successfully</p>
+          <div className="bg-success/10 border border-success rounded-card p-6 animate-scaleIn">
+            <CheckCircle2 className="text-success mx-auto mb-2" size={40} />
+            <p className="text-success font-heading font-bold text-lg">Checked In</p>
             <p className="text-ink mt-1">{result.attendeeName}</p>
             <p className="text-mist text-sm">{result.eventTitle}</p>
           </div>
         )}
 
         {error && (
-          <div className="bg-danger/10 border border-danger rounded-card p-4 text-center">
-            <p className="text-danger font-semibold">✗ {error}</p>
+          <div className="bg-danger/10 border border-danger rounded-card p-6 animate-scaleIn">
+            <XCircle className="text-danger mx-auto mb-2" size={40} />
+            <p className="text-danger font-semibold">{error}</p>
           </div>
         )}
       </div>
