@@ -148,6 +148,35 @@ function LandingPage() {
     ))}
   </div>
 </div>
+
+{/* Event Categories */}
+<div className="bg-[#0D0B1A] py-20 px-6 md:px-12">
+  <h2 className="font-heading font-bold text-3xl md:text-4xl text-white text-center mb-12">
+    Explore by Category
+  </h2>
+
+  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto">
+    {[
+      { icon: "🎤", label: "Conference" },
+      { icon: "🛠️", label: "Workshop" },
+      { icon: "💍", label: "Wedding" },
+      { icon: "⚽", label: "Sports" },
+      { icon: "💻", label: "Hackathon" },
+      { icon: "🎪", label: "Festival" },
+      { icon: "🤝", label: "Meetup" },
+      { icon: "🎸", label: "Concert" },
+    ].map((cat) => (
+      <Link
+        key={cat.label}
+        to="/events"
+        className="flex flex-col items-center gap-2 bg-[#1A1733] rounded-[20px] p-6 hover:shadow-[0_0_20px_rgba(109,40,217,0.4)] transition-all duration-200"
+      >
+        <span className="text-3xl">{cat.icon}</span>
+        <span className="text-white/80 text-sm font-medium">{cat.label}</span>
+      </Link>
+    ))}
+  </div>
+</div>
 </>
 
     
