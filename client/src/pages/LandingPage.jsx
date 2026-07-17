@@ -46,8 +46,90 @@ function StatCounter({ target, suffix, label, decimal = false }) {
   );
 }
 
+const RING_CARDS = [
+  { emoji: "🎤", title: "Tech Summit", subtitle: "1,245 Registered" },
+  { emoji: "🎫", title: "StagePass", subtitle: "QR Entry" },
+  { emoji: "💰", title: "₹2.4L+", subtitle: "Revenue" },
+  { emoji: "🎭", title: "Music Night", subtitle: "Sold Out" },
+  { emoji: "✅", title: "98%", subtitle: "Check-in Rate" },
+  { emoji: "⭐", title: "4.9 Rating", subtitle: "800+ Organizers" },
+];
+
+function RotatingRing() {
+  const [, forceRender] = useState(0);
+  const rotationRef = useRef(0);
+  const lastTimeRef = useRef(null);
+  const frameRef = useRef(null);
+
+  const n = RING_CARDS.length;
+  const angleStep = 360 / n;
+  const radius = 220;
+  const speed = 15;
+
+  useEffect(() => {
+    const loop = (now) => {
+      if (lastTimeRef.current === null) lastTimeRef.current = now;
+      const dt = (now - lastTimeRef.current) / 1000;
+      lastTimeRef.current = now;
+
+      rotationRef.current = (rotationRef.current + speed * dt) % 360;
+
+      forceRender((x) => x + 1);
+      frameRef.current = requestAnimationFrame(loop);
+    };
+
+    frameRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, []);
+
+  const rotation = rotationRef.current;
+
+  return (
+    <div
+      className="hidden lg:block absolute"
+      style={{ perspective: "1100px", right: "2%", bottom: "4%", width: "600px", height: "320px" }}
+    >
+      <div className="relative w-full h-full" style={{ transformStyle: "preserve-3d" }}>
+        {RING_CARDS.map((card, i) => {
+          const baseAngle = i * angleStep;
+          let angle = (baseAngle - rotation) % 360;
+          if (angle > 180) angle -= 360;
+          if (angle < -180) angle += 360;
+
+          const rad = (angle * Math.PI) / 180;
+          const depth = Math.cos(rad);
+
+          const opacity = 0.1 + ((depth + 1) / 2) * 0.9;
+          const scale = 0.55 + ((depth + 1) / 2) * 0.55;
+
+          return (
+            <div
+              key={card.title}
+              className="absolute top-1/2 left-1/2 w-36 -ml-[72px] -mt-10 bg-white/10 backdrop-blur-md border border-white/15 rounded-card p-4 text-white text-center"
+              style={{
+                transform: `rotateY(${angle}deg) translateZ(${radius}px) rotateY(${-angle}deg) scale(${scale})`,
+                opacity,
+                zIndex: Math.round(depth * 100) + 100,
+              }}
+            >
+              <p className="text-2xl mb-1">{card.emoji}</p>
+              <p className="font-semibold text-sm">{card.title}</p>
+              <p className="text-white/60 text-xs">{card.subtitle}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 function LandingPage() {
   const heroWords = ["From", "Idea", "to", "Applause."];
+
+  const confetti = Array.from({ length: 24 }, (_, i) => ({
+    left: `${35 + ((i * 13) % 30)}%`,
+    delay: `${(i % 8) * 0.5}s`,
+    color: i % 3 === 0 ? "#FBBF24" : i % 3 === 1 ? "#6D28D9" : "#FFFFFF",
+  }));
 
   return (
     <>
@@ -63,6 +145,21 @@ function LandingPage() {
             "linear-gradient(to right, rgba(10,10,25,0.88), rgba(10,10,25,0.62), rgba(10,10,25,0.30))",
         }}
       />
+
+      {/* Floating confetti dots */}
+{confetti.map((dot, i) => (
+  <div
+    key={i}
+    className="absolute w-2 h-2 rounded-full animate-float"
+    style={{
+      left: dot.left,
+      top: "-10px",
+      backgroundColor: dot.color,
+      animationDelay: dot.delay,
+      
+    }}
+  />
+))}
 
       <div className="relative z-10 px-6 md:px-16 max-w-2xl">
         <h1 className="font-heading font-bold text-5xl md:text-6xl text-white leading-tight">
@@ -107,33 +204,7 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* Floating glass cards — right side, desktop only */}
-<div className="hidden lg:block absolute right-16 top-0 h-full w-96">
-  <div
-    className="absolute top-28 right-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
-    style={{ animationDelay: "0s" }}
-  >
-    <p className="text-xs text-accent font-semibold mb-1">🎤 LIVE</p>
-    <p className="font-semibold">Tech Summit 2026</p>
-    <p className="text-sm text-white/70">1,245 Registered</p>
-  </div>
-
-  <div
-    className="absolute top-60 right-36 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
-    style={{ animationDelay: "1.3s" }}
-  >
-    <p className="font-semibold text-sm mb-1">🎫 StagePass</p>
-    <div className="w-14 h-14 bg-white rounded mt-1" />
-  </div>
-
-  <div
-    className="absolute top-96 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-card p-4 text-white animate-floatSlow"
-    style={{ animationDelay: "2.6s" }}
-  >
-    <p className="font-semibold">₹2.4L+</p>
-    <p className="text-sm text-white/70">Revenue Generated</p>
-  </div>
-</div>
+      <RotatingRing />
 </div>
 
 {/* Trusted By marquee */}
